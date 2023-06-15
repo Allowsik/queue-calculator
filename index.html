@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Queue Time Estimator</title>
+  <style>
+        #queue-table {
+        margin-top: 20px;
+        border-collapse: collapse;
+        width: 100%;
+        }
+
+        #queue-table th,
+        #queue-table td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        }
+
+        #queue-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        }
+        #queue-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#queue-form label {
+  margin-bottom: 8px;
+}
+
+#queue-form input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+#queue-form button[type="submit"] {
+  padding: 8px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#queue-form button[type="submit"]:hover {
+  background-color: #3e8e41;
+}
+
+.header {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 36px;
+}
+
+.header p {
+  font-size: 18px;
+}
+  </style>
+</head>
+<body>
+  <h1 class="header">Rust Queue Time Estimator</h1>
+  <h2>Estimated Time of Arrival: <span id="eta-placeholder">--:--:--</span></h2>
+
+  <form onsubmit="submitQueuePosition(event)">
+    <label for="queue-position">Queue Position:</label>
+    <input type="text" id="queue-position" name="queue-position">
+    <button type="submit">Submit</button>
+    <button onclick="resetQueue()">Reset</button>
+  </form>
+  <table id="queue-table">
+    <thead>
+      <tr>
+        <th>Queue Position</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  <script>
+    var queuePositions = [];
+
+    function submitQueuePosition(event) {
+      event.preventDefault();
+      var queuePosition = document.getElementById("queue-position").value;
+      if (!/^\d+$/.test(queuePosition)) {
+        alert("Please enter a valid queue position.");
+        return;
+      }
+      var timestamp = new Date().getTime();
+      var table = document.getElementById("queue-table").getElementsByTagName('tbody')[0];
+      var row = table.insertRow(0);
+      var cell1 = row.insertCell(0);
+      var cell2 = row.insertCell(1);
+      cell1.innerHTML = queuePosition;
+      cell2.innerHTML = new Date(timestamp).toLocaleString();
+      document.getElementById("queue-position").value = "";
+      queuePositions.unshift({ position: queuePosition, timestamp: timestamp });
+      updateEta();
+    }
+
+    function resetQueue() {
+      var table = document.getElementById("queue-table").getElementsByTagName('tbody')[0];
+      table.innerHTML = "";
+      document.getElementById("queue-position").value = "";
+      queuePositions = [];
+      updateEta();
+    }
+
+    function updateEta() {
+      var etaPlaceholder = document.getElementById("eta-placeholder");
+      if (queuePositions.length < 2) {
+        etaPlaceholder.innerHTML = "00:00:00";
+        return;
+      }
+      var totalSeconds = 0;
+      for (var i = 0; i < queuePositions.length - 1; i++) {
+        totalSeconds += (queuePositions[i].timestamp - queuePositions[i+1].timestamp) / 1000;
+      }
+      var averageSeconds = totalSeconds / (queuePositions.length - 1);
+      var etaSeconds = queuePositions[0].timestamp / 1000 + averageSeconds * queuePositions[0].position;
+      var etaDate = new Date(etaSeconds * 1000);
+      etaPlaceholder.innerHTML = etaDate.toLocaleTimeString();
+    }
+  </script>
+
+</body>
+</html>

@@ -70,6 +70,7 @@
   </style>
 </head>
 <body>
+
   <h1 class="header">Rust Queue Time Estimator</h1>
   <h2>Estimated Time of Arrival: <span id="eta-placeholder">--:--:--</span></h2>
 
@@ -79,6 +80,18 @@
     <button type="submit">Submit</button>
     <button onclick="resetQueue()">Reset</button>
   </form>
+  <p>To use the Queue Time Estimator app, follow these steps:</p>
+
+<ol>
+  <li>Enter a queue position in the input field and click the "Submit" button.</li>
+  <li>Repeat step above to add more queue positions to the table.</li>
+  <li>The estimated time of arrival (ETA) will be displayed below the table. The ETA is calculated based on the average time between the queue positions.</li>
+  <li>To reset the table and start over, click the "Reset" button.</li>
+</ol>
+
+<p>Note that the ETA is calculated based on the assumption that the time between each queue position is constant. Therefore, the ETA may not be accurate if the time between queue positions varies significantly.</p>
+
+<p>I hope this helps! Let me know if you have any further questions (Discord: @allowsik).</p>
   <table id="queue-table">
     <thead>
       <tr>
